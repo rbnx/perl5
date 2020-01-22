@@ -21515,7 +21515,7 @@ EOM
 		: The first arg can 'char *' or 'void *'
 		: The second arg is some of integral type
 		for xxx in in_addr_t 'const void *' 'const char *' 'void *' 'char *'; do
-			for yyy in size_t long int; do
+			for yyy in socklen_t size_t long int; do
 				case "$netdb_host_type" in
 				'')	try="$extern_C struct hostent *gethostbyaddr($xxx, $yyy, int);"
 					if ./protochk "$try" $hdrs; then
