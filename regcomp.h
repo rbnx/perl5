@@ -181,6 +181,14 @@ struct regnode_1 {
     U32 arg1;
 };
 
+/* Node whose argument is a void pointer */
+struct regnode_v {
+    U8	flags;
+    U8  type;
+    U16 next_off;
+    void * arg1;
+};
+
 /* Similar to a regnode_1 but with an extra signed argument */
 struct regnode_2L {
     U8	flags;
@@ -296,11 +304,13 @@ struct regnode_ssc {
 #undef ARG2
 
 #define ARG(p) ARG_VALUE(ARG_LOC(p))
+#define ARGv(p) ARG_VALUE(ARGv_LOC(p))
 #define ARG1(p) ARG_VALUE(ARG1_LOC(p))
 #define ARG2(p) ARG_VALUE(ARG2_LOC(p))
 #define ARG2L(p) ARG_VALUE(ARG2L_LOC(p))
 
 #define ARG_SET(p, val) ARG__SET(ARG_LOC(p), (val))
+#define ARGv_SET(p, val) ARG__SET(ARGv_LOC(p), (val))
 #define ARG1_SET(p, val) ARG__SET(ARG1_LOC(p), (val))
 #define ARG2_SET(p, val) ARG__SET(ARG2_LOC(p), (val))
 #define ARG2L_SET(p, val) ARG__SET(ARG2L_LOC(p), (val))
@@ -388,6 +398,7 @@ struct regnode_ssc {
 
 #define	NODE_ALIGN(node)
 #define	ARG_LOC(p)	(((struct regnode_1 *)p)->arg1)
+#define ARGv_LOC(p)	(((struct regnode_v *)p)->arg1)
 #define	ARG1_LOC(p)	(((struct regnode_2 *)p)->arg1)
 #define	ARG2_LOC(p)	(((struct regnode_2 *)p)->arg2)
 #define ARG2L_LOC(p)	(((struct regnode_2L *)p)->arg2)
@@ -414,6 +425,12 @@ struct regnode_ssc {
                     FILL_ADVANCE_NODE(offset, op);                      \
                     /* This is used generically for other operations    \
                      * that have a longer argument */                   \
+                    (offset) += regarglen[op];                          \
+    } STMT_END
+#define FILL_ADVANCE_NODE_ARGv(offset, op, arg)                          \
+    STMT_START {                                                        \
+                    ARGv_SET(REGNODE_p(offset), arg);                    \
+                    FILL_ADVANCE_NODE(offset, op);                      \
                     (offset) += regarglen[op];                          \
     } STMT_END
 #define FILL_ADVANCE_NODE_2L_ARG(offset, op, arg1, arg2)                \

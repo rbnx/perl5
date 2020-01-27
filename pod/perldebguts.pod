@@ -845,6 +845,8 @@ will be lost.
  # New charclass like patterns
  LNBREAK          none       generic newline pattern
 
+ SET              depth v    Regex set, temporary internal-only node
+
  # SPECIAL  REGOPS
 
  # This is not really a node, but an optimized away piece of a "long"

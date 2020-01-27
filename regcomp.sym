@@ -280,6 +280,8 @@ KEEPS       KEEPS,      no        ; $& begins here.
 #*New charclass like patterns
 LNBREAK     LNBREAK,    none      ; generic newline pattern
 
+SET         SET,        depth v S ; Regex set, temporary internal-only node
+
 # NEW STUFF SOMEWHERE ABOVE THIS LINE
 
 ################################################################################
