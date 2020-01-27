@@ -690,12 +690,6 @@ my @warning_utf8_only_under_strict = mark_as_utf8(
 
 push @warning_only_under_strict, @warning_utf8_only_under_strict;
 
-my @experimental_regex_sets = (
-    '/(?[ \t ])/' => 'The regex_sets feature is experimental {#} m/(?[{#} \t ])/',
-    'use utf8; /utf8 ネ (?[ [\tネ] ])/' => do { use utf8; 'The regex_sets feature is experimental {#} m/utf8 ネ (?[{#} [\tネ] ])/' },
-    '/noutf8 ネ (?[ [\tネ] ])/' => 'The regex_sets feature is experimental {#} m/noutf8 ネ (?[{#} [\tネ] ])/',
-);
-
 my @deprecated = (
  '/^{/'          => "",
  '/foo|{/'       => "",
@@ -729,7 +723,6 @@ for my $strict ("", "use re 'strict';") {
             fail("$0: Internal error: '$death[$i]' should have an error message");
         }
         else {
-            no warnings 'experimental::regex_sets';
             no warnings 'experimental::re_strict';
 
             warning_is(sub {
@@ -783,7 +776,6 @@ for my $strict ("",  "no warnings 'experimental::re_strict'; use re 'strict';") 
     }
 
     foreach my $ref (\@warning_tests,
-                     \@experimental_regex_sets,
                      \@deprecated)
     {
         my $warning_type;
@@ -796,10 +788,6 @@ for my $strict ("",  "no warnings 'experimental::re_strict'; use re 'strict';") 
         }
         elsif ($ref == \@deprecated) {
             $warning_type = 'regexp, deprecated';
-            $default_on = 1;
-        }
-        elsif ($ref == \@experimental_regex_sets) {
-            $warning_type = 'experimental::regex_sets';
             $default_on = 1;
         }
         else {
