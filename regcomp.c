@@ -16076,7 +16076,7 @@ S_handle_regex_sets(pTHX_ RExC_state_t *pRExC_state, SV** return_invlist,
                                        with left paren in stack is; -1 if none.
                                      */
     STRLEN len;                     /* Temporary */
-    regnode_offset node;                  /* Temporary, and final regnode returned by
+    regnode_offset node;            /* Temporary, and final regnode returned by
                                        this function */
     const bool save_fold = FOLD;    /* Temporary */
     char *save_end, *save_parse;    /* Temporaries */
@@ -16214,6 +16214,9 @@ redo_curchar:
                     && UCHARAT(RExC_parse + 1) == '?'
                     && UCHARAT(RExC_parse + 2) == '^')
                 {
+                    const regnode_offset orig_emit = RExC_emit;
+                    SV * resultant_invlist;
+
                     /* If is a '(?^', could be an embedded '(?^flags:(?[...])'.
                      * This happens when we have some thing like
                      *
@@ -16223,24 +16226,20 @@ redo_curchar:
                      *
                      * Here we would be handling the interpolated
                      * '$thai_or_lao'.  We handle this by a recursive call to
-                     * ourselves which returns the inversion list the
-                     * interpolated expression evaluates to.  We use the flags
+                     * reg which returns the inversion list the
+                     * XXX fix up interpolated expression evaluates to.  We use the flags
                      * from the interpolated pattern. */
 
-                    const regnode_offset orig_emit = RExC_emit;
-                    SV * resultant_invlist;
-
+                    RExC_parse++;
                     RExC_sets_depth++;
 
-                    RExC_parse++;
-                    I32 reg_flags = 0;
-	            regnode_offset ret = reg(pRExC_state, 2, &reg_flags, depth+1);
-                    RETURN_FAIL_ON_RESTART(reg_flags, flagp);
+	            node = reg(pRExC_state, 2, flagp, depth+1);
+                    RETURN_FAIL_ON_RESTART(*flagp, flagp);
 
-                    if (OP(REGNODE_p(ret)) != SET || RExC_emit - orig_emit > sizeof(struct regnode)) {
+                    if (OP(REGNODE_p(node)) != SET || node != 1) {
                         vFAIL("Expecting interpolated extended charclass");
                     }
-                    resultant_invlist = (SV *) ARGv(REGNODE_p(ret));
+                    resultant_invlist = (SV *) ARGv(REGNODE_p(node));
                     current = invlist_clone(resultant_invlist, NULL);
                     SvREFCNT_dec(resultant_invlist);
 
