@@ -1172,4 +1172,3 @@ if ($Config{intsize} == 4 && $Config{uvsize} > 4 && $Config{sizesize} > 4) {
 }
 
 done_testing();
-exit 1;
